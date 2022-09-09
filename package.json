@@ -22,10 +22,15 @@
     "./auth": "./dist/auth/index.js",
     "./validateReqParams": "./dist/validateReqParams/index.js",
     "./logger": "./dist/logger/index.js",
-    "./session": "./dist/session/index.js"
+    "./session": "./dist/session/index.js",
+    "./multer": "./dist/multer/index.js",
+    "./mock": "./dist/mock/index.js"
   },
   "typesVersions": {
     "*": {
+      "multer": [
+        "dist/multer/index.d.ts"
+      ],
       "auth": [
         "dist/auth/index.d.ts"
       ],
@@ -58,6 +63,7 @@
     "node-fetch": "^3.2.10"
   },
   "devDependencies": {
+    "lizzygram-common-data": "^0.2.4",
     "@babel/core": "^7.18.9",
     "@babel/preset-env": "^7.18.9",
     "@types/express": "^4.17.13",
@@ -72,7 +78,7 @@
     "express": "^4.18.1",
     "fmagic": "^1.1.5",
     "jest": "^28.1.3",
-    "multer": "^1.4.4",
+    "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.2.9",
     "supertest": "^6.2.4",
     "ts-jest": "^28.0.7",

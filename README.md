@@ -14,6 +14,34 @@
 
     This middleware get user from req.user and send req to find out if this user has grants. We can provide sessionStorage to save result.
 
+## Multer
+
+- multerMiddleware - main middleware where we can set all config(and file and req params validation) in one place
+
+```javascript
+import { multerMiddleware } from "jbackend/multer";
+
+const app = express();
+
+app.post(
+  "/upload-file",
+  multerMiddleware(
+    {
+      isFileRequired: true,
+      multerLimits,
+      logger,
+      validateReqFile,
+      validateReqParams,
+    },
+    // create storage example we can watch at multer/storage/TestFileStreamProxyStorage
+    storage
+  ),
+  (req: Request, res: Response, next: NextFunction) => {
+    res.status(200).end();
+  }
+);
+```
+
 ## Build and publish
 
 - commit and push changes

@@ -9,7 +9,7 @@ export type ValidationMiddlewareData = {
 };
 
 const validationMiddleware =
-  (logger: Logger, reqBodyValidate: ValidateReqParams) =>
+  (logger: Logger, validateReqParams: ValidateReqParams) =>
   (req: Request, res: Response, next: NextFunction) =>
     compose(
       () => ({
@@ -21,7 +21,7 @@ const validationMiddleware =
       }),
       (data: ValidationMiddlewareData) => ({
         ...data,
-        validationResult: reqBodyValidate(data.reqData),
+        validationResult: validateReqParams(data.reqData),
       }),
       elif(
         ({ validationResult }: ValidationMiddlewareData) =>
