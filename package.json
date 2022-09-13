@@ -24,7 +24,8 @@
     "./logger": "./dist/logger/index.js",
     "./session": "./dist/session/index.js",
     "./multer": "./dist/multer/index.js",
-    "./mock": "./dist/mock/index.js"
+    "./mock": "./dist/mock/index.js",
+    "./envVars": "./dist/envVars/index.js"
   },
   "typesVersions": {
     "*": {
@@ -42,6 +43,12 @@
       ],
       "session": [
         "dist/session/index.d.ts"
+      ],
+      "mock": [
+        "dist/mock/index.d.ts"
+      ],
+      "envVars": [
+        "dist/envVars/index.d.ts"
       ]
     }
   },

@@ -5,7 +5,7 @@ import { join } from "path";
 import request from "supertest";
 import { init } from "./app";
 //import { photoFileFilter } from "../fileFilter";
-import { GoogleDriveStorage } from "../storage/googleDrive";
+import { TestFileStreamProxyStorage } from "../storage/TestFileStreamProxyStorage";
 
 const multerLimits = {
   fields: 1,
@@ -36,7 +36,7 @@ let app: Express;
 describe("multer", () => {
   describe("Multer file filter", () => {
     beforeAll(async () => {
-      const storage = new GoogleDriveStorage(25000);
+      const storage = new TestFileStreamProxyStorage(25000);
       /*  const storage = multer.diskStorage({
         destination: function (req, file, cb) {
           cb(null, join(process.cwd(), "upload"));

@@ -21,6 +21,7 @@ export type MulterOptions = {
   validateReqFile?: ValidateReqFile;
   logger: Logger;
   isFileRequired: boolean;
+  fileFieldName?: string;
   //storageType: StorageType;
 };
 
@@ -35,7 +36,9 @@ export const multerMiddleware_ =
         options.validateReqParams,
         options.validateReqFile
       ),
-    }).single("file");
+    }).single(
+      options.fileFieldName === undefined ? "file" : options.fileFieldName
+    );
 
     const uploadCallback_ = uploadCallback(
       options.isFileRequired,
