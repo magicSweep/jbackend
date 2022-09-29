@@ -10,11 +10,7 @@ abstract class AWithMaxFileSizeStorage {
     this.maxFileSizeBytes = maxFileSizeBytes;
   }
 
-  _handleFile(
-    req: Request & { googleDriveId: string },
-    file: Express.Multer.File,
-    cb: any
-  ) {
+  _handleFile(req: Request, file: Express.Multer.File, cb: any) {
     /* if (err) return cb(err);
 
     var googleStream = createWriteStream(path);
