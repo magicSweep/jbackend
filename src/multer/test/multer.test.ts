@@ -6,6 +6,7 @@ import request from "supertest";
 import { init } from "./app";
 //import { photoFileFilter } from "../fileFilter";
 import { TestFileStreamProxyStorage } from "../storage/TestFileStreamProxyStorage";
+import { winstonLogger } from "../../logger";
 
 const multerLimits = {
   fields: 1,
@@ -31,13 +32,56 @@ const pathToPhoto = join(process.cwd(), "src/static/freestocks-9U.jpg");
 const pathToWrongFile = join(process.cwd(), "src/types.ts");
 const url = "/test-multer";
 
-let app: Express;
-
 describe("multer", () => {
-  describe("Multer file filter", () => {
+  describe("Proxy to cloud storage", () => {
+    let app: Express;
+
     beforeAll(async () => {
-      const storage = new TestFileStreamProxyStorage(25000);
-      /*  const storage = multer.diskStorage({
+      const maxFileSizeBytes = 25000;
+
+      const storage = new TestFileStreamProxyStorage(maxFileSizeBytes);
+
+      app = await init(
+        {
+          isFileRequired: true,
+          multerLimits,
+          logger: winstonLogger,
+          responseOnError: (req, res, error) => {
+            console.log("-------------ERROR", error);
+
+            if (error.includes("Too big file") === true) {
+              return res.status(200).json({
+                status: "error",
+                message: "Quota limit",
+              });
+            }
+
+            res.status(403).end();
+          },
+        },
+        storage
+      );
+    });
+
+    test("Max file size we control in storage", async () => {
+      const response = await request(app)
+        .post(url)
+        .field("photoId", "hello1234567890123")
+        .attach("file", pathToPhoto);
+
+      expect(response.status).toEqual(200);
+      expect(response.text).toEqual(
+        '{"status":"error","message":"Quota limit"}'
+      );
+    });
+  });
+
+  describe("Disk storage", () => {
+    let app: Express;
+
+    beforeAll(async () => {
+      //const storage = new TestFileStreamProxyStorage(25000);
+      const storage = multer.diskStorage({
         destination: function (req, file, cb) {
           cb(null, join(process.cwd(), "upload"));
         },
@@ -48,9 +92,23 @@ describe("multer", () => {
           )}.${fileExtension}`;
           cb(null, `photo-${uniqueSuffix}`);
         },
-      }); */
+      });
 
-      app = await init(multerLimits, storage); //
+      app = await init(
+        {
+          isFileRequired: true,
+          multerLimits,
+          logger: winstonLogger,
+          validateReqFile: (file: Express.Multer.File) => {
+            if (file.mimetype.includes("image") === false) {
+              return `Bad mimetype ${file.mimetype}`;
+            }
+
+            return true;
+          },
+        },
+        storage
+      ); //
     });
 
     // FILTER FILE WORK ONLY IF WE HAVE FILE IN OUR POST REQUEST
@@ -78,14 +136,14 @@ describe("multer", () => {
       const response = await request(app)
         .post(url)
         .field("photoId", "hello1234567890123")
-        //.field("userUid", "fgTrANbtA4bBEjFsvWWbSOPdfLB2")
+        .field("userUid", "fgTrANbtA4bBEjFsvWWbSOPdfLB2")
         .attach("file", pathToPhoto);
 
       expect(response.text).toEqual("");
       expect(response.status).toEqual(400);
     });
 
-    test.only("If all okey - we upload file.", async () => {
+    test.skip("If all okey - we upload file.", async () => {
       const response = await request(app)
         .post(url)
         .field("photoId", "hello1234567890123")

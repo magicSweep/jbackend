@@ -6,7 +6,7 @@ import { checkMaxFileSizeOnStream } from "./utils";
 abstract class AWithMaxFileSizeStorage {
   maxFileSizeBytes;
 
-  constructor(maxFileSizeBytes: number = 50000000) {
+  constructor(maxFileSizeBytes?: number) {
     this.maxFileSizeBytes = maxFileSizeBytes;
   }
 
@@ -24,12 +24,18 @@ abstract class AWithMaxFileSizeStorage {
       });
     }); */
 
-    console.log("--------------------FILE HANDLER", req.body);
+    /*  console.log(
+      "--------------------FILE HANDLER ABSTRACT",
+      file.filename,
+      file.path
+    ); */
 
-    checkMaxFileSizeOnStream({
-      readStream: file.stream,
-      maxFileSizeBytes: this.maxFileSizeBytes,
-    });
+    if (this.maxFileSizeBytes !== undefined) {
+      checkMaxFileSizeOnStream({
+        readStream: file.stream,
+        maxFileSizeBytes: this.maxFileSizeBytes,
+      });
+    }
   }
 
   abstract _removeFile(

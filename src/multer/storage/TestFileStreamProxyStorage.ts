@@ -3,6 +3,7 @@ import { createWriteStream, createReadStream, read } from "fs";
 import { Request } from "express";
 import { join } from "path";
 import AWithMaxFileSizeStorage from "./AWithMaxFileSizeStorage";
+import { stringify } from "querystring";
 //import { maxPhotoFileSize } from "lizzygram-common-data/config";
 
 const uploadImage_ = ({ readStream }: any) => {
@@ -57,11 +58,16 @@ export class TestFileStreamProxyStorage extends AWithMaxFileSizeStorage {
 
       req.googleDriveId = res.id;
 
-      console.log("--------------------FILE HANDLER", req.googleDriveId);
+      /*  console.log(
+        "--------------------FILE HANDLER",
+        //req.googleDriveId,
+        file.filename,
+        file.path
+      ); */
 
       cb(null, res);
     } catch (error: any) {
-      console.log("--------------------FILE HANDLER ERROR", error);
+      //console.log("--------------------FILE HANDLER ERROR", error);
       cb(error);
     }
   }
@@ -69,6 +75,7 @@ export class TestFileStreamProxyStorage extends AWithMaxFileSizeStorage {
   async _removeFile(req: Request, file: Express.Multer.File, cb: any) {
     try {
       //unlink(file.path);
+      //console.log("---------------REMOVE FILE");
       cb();
     } catch (error) {
       cb(error);

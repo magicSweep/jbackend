@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction, Express } from "express";
-import multer, { Options } from "multer";
+import multer, { Options, StorageEngine } from "multer";
 import { join } from "path";
 //import { fileFilter, fileName, multerMiddleware } from "../multer";
 import { winstonLogger } from "../../logger";
-import { multerMiddleware } from "./../manager";
+import { multerMiddleware, MulterOptions } from "./../manager";
 
 const multerLimits = {
   fields: 6,
@@ -17,11 +17,7 @@ const pathToPhoto = join(process.cwd(), "src/static/12.jpg");
 const pathToWrongFile = join(process.cwd(), "src/types.ts");
 const url = "/test-multer";
 
-export const init = async (
-  multerLimits: Options["limits"],
-  //fileFilter: Options["fileFilter"],
-  storage: Options["storage"]
-) => {
+export const init = async (options: MulterOptions, storage: StorageEngine) => {
   // MULTER
 
   /* const upload = multer({
@@ -35,13 +31,14 @@ export const init = async (
   app.post(
     url,
     multerMiddleware(
-      {
+      /* {
         isFileRequired: true,
         multerLimits,
         logger: winstonLogger,
         //validateReqFile,
         //validateReqParams
-      },
+      } */
+      options,
       storage
     ),
     //validateMulterReqParamsMiddleware(upload, winstonLogger),

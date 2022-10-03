@@ -15,10 +15,13 @@ type UploadFuncData = {
   logMsg: string;
 };
 
+type ResponseOnError = (req: Request, res: Response, error: any) => void;
+
 export type MulterOptions = {
   multerLimits: Options["limits"];
   validateReqParams?: ValidateReqParams;
   validateReqFile?: ValidateReqFile;
+  responseOnError?: ResponseOnError;
   logger: Logger;
   isFileRequired: boolean;
   fileFieldName?: string;
@@ -26,7 +29,7 @@ export type MulterOptions = {
 };
 
 export const multerMiddleware_ =
-  (makeFileFilter: any, uploadCallback: any) =>
+  (makeFileFilter: any, uploadCallback__: typeof uploadCallback) =>
   (options: MulterOptions, storage?: StorageEngine) =>
   (req: Request, res: Response, next: NextFunction) => {
     const upload = multer({
@@ -40,9 +43,10 @@ export const multerMiddleware_ =
       options.fileFieldName === undefined ? "file" : options.fileFieldName
     );
 
-    const uploadCallback_ = uploadCallback(
+    const uploadCallback_ = uploadCallback__(
       options.isFileRequired,
-      options.logger
+      options.logger,
+      options.responseOnError
     );
 
     return upload(req, res, uploadCallback_(req, res, next));
@@ -90,7 +94,7 @@ export const makeFileFilter: (
 };
 
 export const uploadCallback =
-  (isFileRequired: boolean, logger: any) =>
+  (isFileRequired: boolean, logger: any, responseOnError?: ResponseOnError) =>
   (req: Request, res: Response, next: NextFunction) =>
     compose<any, NextFunction>(
       (err: any) => NI_Next.of({ error: err }),
@@ -150,7 +154,11 @@ export const uploadCallback =
         ({ msgLevel, logMsg, error }: UploadFuncData) => {
           logger.log(msgLevel, logMsg, { error });
 
-          res.status(400).end();
+          if (responseOnError !== undefined) {
+            responseOnError(req, res, error);
+          } else {
+            res.status(400).end();
+          }
         },
         () => {
           logger.log("info", "MULTER VALIDATION SUCCESS", {

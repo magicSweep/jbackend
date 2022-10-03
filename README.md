@@ -32,7 +32,8 @@ app.post(
       logger,
       validateReqFile,
       validateReqParams,
-    },
+      // if we wanna send some custom response on error
+      responseOnError
     // create storage example we can watch at multer/storage/TestFileStreamProxyStorage
     storage
   ),
